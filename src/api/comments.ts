@@ -10,5 +10,5 @@ export const createComment = (data: CommentData & { postId: number }) => {
 };
 
 export const deleteComment = (commentId: number) => {
-  return client.delete(`/comment/${commentId}`);
+  return client.delete(`/comments/${commentId}`);
 };

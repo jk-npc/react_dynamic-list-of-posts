@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User } from '../types/User';
+import classNames from 'classnames';
 
 type Props = {
   users: User[];
@@ -22,7 +23,7 @@ export const UserSelector: React.FC<Props> = ({
   return (
     <div
       data-cy="UserSelector"
-      className={`dropdown ${isOpen ? 'is-active' : ''}`}
+      className={classNames('dropdown', { 'is-active': isOpen })}
     >
       <div className="dropdown-trigger">
         <button
@@ -47,7 +48,9 @@ export const UserSelector: React.FC<Props> = ({
             <a
               key={user.id}
               href={`#user-${user.id}`}
-              className={`dropdown-item ${selectedUser?.id === user.id ? 'is-active' : ''}`}
+              className={classNames('dropdown-item', {
+                'is-active': selectedUser?.id === user.id,
+              })}
               onMouseDown={() => handleSelect(user)}
             >
               {user.name}

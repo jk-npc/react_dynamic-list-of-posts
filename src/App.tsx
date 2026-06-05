@@ -17,10 +17,12 @@ import { getUserPosts } from './api/posts';
 export const App = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [isLoadingPosts, setIsLoadingPosts] = useState(false);
-  const [postsError, setPostsError] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [postsState, setPostsState] = useState({
+    isLoading: false,
+    hasError: false,
+    items: [] as Post[],
+  });
 
   useEffect(() => {
     getUsers().then(setUsers);
@@ -33,20 +35,28 @@ export const App = () => {
 
     setSelectedUser(user);
     setSelectedPost(null);
-    setIsLoadingPosts(true);
-    setPostsError(false);
+    setPostsState({ isLoading: true, hasError: false, items: [] });
 
     getUserPosts(user.id)
-      .then(setPosts)
-      .catch(() => setPostsError(true))
-      .finally(() => setIsLoadingPosts(false));
+      .then(data => {
+        setPostsState({ isLoading: false, hasError: false, items: data });
+      })
+      .catch(() => {
+        setPostsState({ isLoading: false, hasError: true, items: [] });
+      });
   };
 
   const showNoPosts =
-    selectedUser && !isLoadingPosts && !postsError && posts.length === 0;
+    selectedUser &&
+    !postsState.isLoading &&
+    !postsState.hasError &&
+    postsState.items.length === 0;
 
   const showPosts =
-    selectedUser && !isLoadingPosts && !postsError && posts.length > 0;
+    selectedUser &&
+    !postsState.isLoading &&
+    !postsState.hasError &&
+    postsState.items.length > 0;
 
   return (
     <main className="section">
@@ -67,9 +77,9 @@ export const App = () => {
                   <p data-cy="NoSelectedUser">No user selected</p>
                 )}
 
-                {isLoadingPosts && <Loader />}
+                {postsState.isLoading && <Loader />}
 
-                {postsError && (
+                {postsState.hasError && (
                   <div
                     className="notification is-danger"
                     data-cy="PostsLoadingError"
@@ -86,7 +96,7 @@ export const App = () => {
 
                 {showPosts && (
                   <PostsList
-                    posts={posts}
+                    posts={postsState.items}
                     selectedPost={selectedPost}
                     onSelectPost={setSelectedPost}
                   />

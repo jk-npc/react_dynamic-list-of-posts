@@ -13,12 +13,14 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [deleteError, setDeleteError] = useState(false);
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
     setHasError(false);
     setIsFormVisible(false);
+    setDeleteError(false);
 
     getPostComments(post.id)
       .then(setComments)
@@ -27,8 +29,15 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
   }, [post.id]);
 
   const handleDeleteComment = (commentId: number) => {
+    const previousComments = comments;
+
     setComments(prev => prev.filter(c => c.id !== commentId));
-    deleteComment(commentId);
+    setDeleteError(false);
+
+    deleteComment(commentId).catch(() => {
+      setComments(previousComments);
+      setDeleteError(true);
+    });
   };
 
   const handleAddComment = (newComment: Comment) => {
@@ -60,9 +69,15 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
           </p>
         )}
 
-        {!isLoading && !hasError && comments.length === 0 && (
+        {!isLoading && !hasError && comments.length > 0 && (
           <>
             <p className="title is-4">Comments:</p>
+
+            {deleteError && (
+              <div className="notification is-danger">
+                Unable to delete a comment. Please try again.
+              </div>
+            )}
 
             {comments.map(comment => (
               <article
@@ -80,9 +95,7 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
                     className="delete is-small"
                     aria-label="delete"
                     onClick={() => handleDeleteComment(comment.id)}
-                  >
-                    delete button
-                  </button>
+                  />
                 </div>
 
                 <div className="message-body" data-cy="CommentBody">
