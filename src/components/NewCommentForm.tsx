@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { CommentData, Comment } from '../types/Comment';
 import { createComment } from '../api/postComments';
@@ -63,6 +64,7 @@ export const NewCommentForm: React.FC<Props> = ({ postId, onAddComment }) => {
     setNameError(false);
     setEmailError(false);
     setBodyError(false);
+    setSubmitError(false);
   };
 
   return (
@@ -186,7 +188,6 @@ export const NewCommentForm: React.FC<Props> = ({ postId, onAddComment }) => {
         </div>
 
         <div className="control">
-          {/* eslint-disable-next-line react/button-has-type */}
           <button
             type="reset"
             className="button is-link is-light"
@@ -204,4 +205,9 @@ export const NewCommentForm: React.FC<Props> = ({ postId, onAddComment }) => {
       )}
     </form>
   );
+};
+
+NewCommentForm.propTypes = {
+  postId: PropTypes.number.isRequired,
+  onAddComment: PropTypes.func.isRequired,
 };
