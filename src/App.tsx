@@ -12,7 +12,7 @@ import { Loader } from './components/Loader';
 import { User } from './types/User';
 import { Post } from './types/Post';
 import { getUsers } from './api/users';
-import { getUserPosts } from './api/posts';
+import { getUserPosts } from './api/userPosts';
 
 export const App = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -28,6 +28,22 @@ export const App = () => {
     getUsers().then(setUsers);
   }, []);
 
+  useEffect(() => {
+    if (!selectedUser) {
+      return;
+    }
+
+    setPostsState({ isLoading: true, hasError: false, items: [] });
+
+    getUserPosts(selectedUser.id)
+      .then(data => {
+        setPostsState({ isLoading: false, hasError: false, items: data });
+      })
+      .catch(() => {
+        setPostsState({ isLoading: false, hasError: true, items: [] });
+      });
+  }, [selectedUser]);
+
   const handleSelectUser = (user: User) => {
     if (selectedUser?.id === user.id) {
       return;
@@ -35,15 +51,6 @@ export const App = () => {
 
     setSelectedUser(user);
     setSelectedPost(null);
-    setPostsState({ isLoading: true, hasError: false, items: [] });
-
-    getUserPosts(user.id)
-      .then(data => {
-        setPostsState({ isLoading: false, hasError: false, items: data });
-      })
-      .catch(() => {
-        setPostsState({ isLoading: false, hasError: true, items: [] });
-      });
   };
 
   const showNoPosts =

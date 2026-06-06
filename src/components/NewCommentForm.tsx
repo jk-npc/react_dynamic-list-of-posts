@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { CommentData } from '../types/Comment';
-import { createComment } from '../api/comments';
-import { Comment } from '../types/Comment';
 import classNames from 'classnames';
+import { CommentData, Comment } from '../types/Comment';
+import { createComment } from '../api/postComments';
 
 type Props = {
   postId: number;
@@ -178,7 +177,9 @@ export const NewCommentForm: React.FC<Props> = ({ postId, onAddComment }) => {
         <div className="control">
           <button
             type="submit"
-            className={`button is-link ${isSubmitting ? 'is-loading' : ''}`}
+            className={classNames('button', 'is-link', {
+              'is-loading': isSubmitting,
+            })}
           >
             Add
           </button>

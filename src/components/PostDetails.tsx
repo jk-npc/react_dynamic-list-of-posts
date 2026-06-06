@@ -3,7 +3,7 @@ import { Post } from '../types/Post';
 import { Comment } from '../types/Comment';
 import { Loader } from './Loader';
 import { NewCommentForm } from './NewCommentForm';
-import { getPostComments, deleteComment } from '../api/comments';
+import { getPostComments, deleteComment } from '../api/postComments';
 
 type Props = {
   post: Post;
